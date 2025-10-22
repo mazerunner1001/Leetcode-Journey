@@ -1,0 +1,27 @@
+// solving tree (BST) question using postorder DFS and tuple return 
+
+class Solution {
+public:
+    int maxSum = 0;
+    tuple<bool, int, int, int> dfs(TreeNode* node){
+        if(!node) return {true, 0, INT_MAX, INT_MIN};
+        
+        auto [isleftBST, leftsum, leftmin, leftmax] = dfs(node->left);
+        auto [isrightBST, rightsum, rightmin, rightmax] = dfs(node->right);
+
+        if(isleftBST && isrightBST && node->val > leftmax && node->val < rightmin){
+            int sum = leftsum + rightsum + node->val;
+            maxSum = max(sum, maxSum);
+
+            int newMin = min(leftmin, node->val);
+            int newMax = max(rightmax, node->val);
+
+            return {true, sum, newMin, newMax};
+        }  
+        return {false, 0, 0, 0};
+    }
+    int maxSumBST(TreeNode* root) {
+        dfs(root);
+        return maxSum;
+    }
+};
