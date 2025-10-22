@@ -1,0 +1,32 @@
+// substring sliding window problem using frequency map
+
+class Solution {
+public:
+    int maxFreq(string s, int maxLetters, int minSize, int maxSize) {
+        int n = s.size();
+        unordered_map<string, int> freq;
+        unordered_map<char, int> count;
+
+        int unique = 0;
+        int ans = 0;
+
+        int left = 0;
+        for(int right = 0; right < n; right++){
+            count[s[right]]++;
+            if(count[s[right]] == 1) unique++;
+
+            if(right-left+1 > minSize){
+                count[s[left]]--;
+                if(count[s[left]] == 0) unique--;
+                left++;
+            }
+
+            if(right-left+1 == minSize && unique <= maxLetters){
+                string str = s.substr(left, minSize);
+                freq[str]++;
+                ans = max(ans, freq[str]); 
+            }
+        }
+        return ans;
+    }
+};
