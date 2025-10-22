@@ -1,0 +1,53 @@
+// solving tree coprime problem using euclidean GCD formula, DFS, backtracking, stack constraint logic (bruting over all values of nums)
+
+class Solution {
+public:
+    vector<vector<int>> adj;
+    vector<int> ans;
+
+    int gcd(int a, int b){
+        while(b){
+            a %= b;
+            swap(a,b);
+        }
+        return a;
+    }
+    void dfs(int node, int parent, vector<vector<pair<int, int>>>& valStack, vector<int>& nums, int depth){
+        int val = nums[node];
+        int bestAncestor = -1;
+        int bestDepth = -1;
+
+        for(int i=0; i<=50; i++){
+            if(gcd(i, val) == 1 && !valStack[i].empty()){
+                auto [ancestor, d] = valStack[i].back();
+                if(d > bestDepth){
+                    bestDepth = d;
+                    bestAncestor = ancestor;
+                }
+            }
+        }
+        ans[node] = bestAncestor;
+
+        valStack[val].push_back({node, depth});
+
+        for(int nei : adj[node]){
+            if(nei != parent){
+                dfs(nei, node, valStack, nums, depth+1);
+            }
+        }
+
+        valStack[val].pop_back();
+    }
+    vector<int> getCoprimes(vector<int>& nums, vector<vector<int>>& edges) {
+        int n = nums.size();
+        ans.assign(n, -1);
+        adj.assign(n, {});
+        for(auto edge : edges){
+            adj[edge[0]].push_back(edge[1]);
+            adj[edge[1]].push_back(edge[0]);
+        }
+        vector<vector<pair<int, int>>> valStack(51);
+        dfs(0, -1, valStack, nums, 0);
+        return ans;
+    }
+};
