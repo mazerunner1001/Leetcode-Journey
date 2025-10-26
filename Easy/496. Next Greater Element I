@@ -1,3 +1,5 @@
+// solving basic array question using hash map and monotonic stack
+
 class Solution {
 public:
     vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
