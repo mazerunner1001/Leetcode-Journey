@@ -1,0 +1,28 @@
+// simple binary string question involving generating all possible strings and comparing
+
+class Solution {
+public:
+    int minSwaps(string s) {
+        int n = s.size();
+        string valid1(n,'0'), valid2(n,'0');
+        for(int i=0; i<n; i++){
+            if(i%2) valid1[i] = '0', valid2[i] = '1';
+            else valid1[i] = '1', valid2[i] = '0';
+        }
+        int diff1 = 0, diff2 = 0;
+        for(int i=0; i<n; i++){
+            if(valid1[i] != s[i]) diff1++;
+            if(valid2[i] != s[i]) diff2++;
+        }
+
+        int count0 = count(s.begin(), s.end(), '0');
+        int count1 = n - count0;
+        if (abs(count0 - count1) > 1) return -1;
+
+        if(diff1%2 == 0 && diff2%2 == 0) return diff1 > diff2 ? diff2/2 : diff1/2;
+        else if(diff1%2 == 0) return diff1/2;
+        else if(diff2%2 == 0) return diff2/2;
+
+        return -1;
+    }
+};
