@@ -1,0 +1,28 @@
+// done using 2d DP and take not take concept
+
+class Solution {
+public:
+    int rec(int day, int buy, vector<int>& prices, int n, vector<vector<int>>& dp){
+        if(day == n){
+            return 0;
+        }
+        if(dp[day][buy] != -1) return dp[day][buy];
+        int profit;
+        if(buy){
+            int take = -prices[day] + rec(day+1, 0, prices, n, dp);
+            int nottake = rec(day+1, 1, prices, n, dp);
+            profit = max(take, nottake);
+        } else{
+            int sell = prices[day] + rec(day+1, 1, prices, n, dp);
+            int notsell = rec(day+1, 0, prices, n, dp);
+            profit = max(sell, notsell);
+        }
+        return dp[day][buy] = profit;
+    }
+
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        vector<vector<int>> dp(n, vector<int>(2, -1));
+        return rec(0, 1, prices, n, dp);
+    }
+};
