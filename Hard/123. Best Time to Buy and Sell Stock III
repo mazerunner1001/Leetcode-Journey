@@ -1,0 +1,22 @@
+// solved using dp take not take concept with a 3rd dimension for checking the cap
+
+class Solution {
+public:
+    int rec(int day, int buy, int cap, vector<int>& prices, vector<vector<vector<int>>>& dp, int n){
+        if(cap == 0) return 0;
+        if(day == n) return 0;
+
+        if(dp[day][buy][cap] != -1) return dp[day][buy][cap];
+
+        int profit = 0;
+        if(buy){
+            return dp[day][buy][cap] =  max(-prices[day] + rec(day+1, 0, cap, prices, dp, n), rec(day+1, 1, cap, prices, dp, n));
+        }
+        return dp[day][buy][cap] = max(prices[day] + rec(day+1, 1, cap-1, prices, dp, n), rec(day+1, 0, cap-1, prices, dp, n));
+    }
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        vector<vector<vector<int>>> dp(n, vector<vector<int>>(2, vector<int>(3, -1)));
+        return rec(0, 1, 2, prices, dp, n);
+    }
+};
