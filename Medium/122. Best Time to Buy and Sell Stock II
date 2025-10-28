@@ -1,5 +1,8 @@
 // done using 2d DP and take not take concept
 
+
+// memoization
+
 class Solution {
 public:
     int rec(int day, int buy, vector<int>& prices, int n, vector<vector<int>>& dp){
@@ -24,5 +27,62 @@ public:
         int n = prices.size();
         vector<vector<int>> dp(n, vector<int>(2, -1));
         return rec(0, 1, prices, n, dp);
+    }
+};
+
+
+// tabulation
+
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        vector<vector<int>> dp(n+1, vector<int>(2, 0));
+        dp[n][0] = dp[n][1] = 0;
+        for(int ind = n-1; ind >= 0; ind--){
+            for(int buy = 0; buy<=1; buy++){
+                long profit = 0;
+                if(buy){
+                    int take = -prices[ind] + dp[ind+1][0];
+                    int nottake = dp[ind+1][1];
+                    profit = max(take, nottake);
+                } else{
+                    int sell = prices[ind] + dp[ind+1][1];
+                    int notsell = dp[ind+1][0];
+                    profit = max(sell, notsell);
+                }
+                dp[ind][buy] = profit;
+            }
+        }
+        return dp[0][1];
+    }
+};
+
+
+//space optimization
+
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        vector<long> ahead(2, 0), curr(2, 0);
+        ahead[0] = ahead[1] = 0;
+        for(int ind = n-1; ind >= 0; ind--){
+            for(int buy = 0; buy<=1; buy++){
+                long profit = 0;
+                if(buy){
+                    int take = -prices[ind] + ahead[0];
+                    int nottake = ahead[1];
+                    profit = max(take, nottake);
+                } else{
+                    int sell = prices[ind] + ahead[1];
+                    int notsell = ahead[0];
+                    profit = max(sell, notsell);
+                }
+                curr[buy] = profit;
+            }
+            ahead = curr;
+        }
+        return curr[1];
     }
 };
