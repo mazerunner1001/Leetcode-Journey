@@ -1,0 +1,54 @@
+solving number of connected components and number of extra edges using DSU concept
+
+class DisjointSet{
+public:
+    vector<int> rank, parent; 
+    DisjointSet(int n){
+        rank.resize(n+1);
+        parent.resize(n+1);
+        for(int i=0; i<=n; i++){
+            parent[i] = i;
+        }
+    }
+    int findParent(int u){
+        if(parent[u] == u) return u;
+        return parent[u] = findParent(parent[u]);
+    }
+    void unionbyrank(int u, int v){
+        int par_u = findParent(u);
+        int par_v = findParent(v);
+        if(par_u == par_v) return; 
+        if(rank[par_u] > rank[par_v]) parent[par_v] = par_u;
+        else if(rank[par_u] < rank[par_v]) parent[par_u] = par_v;
+        else{
+            parent[par_u] = par_v;
+            rank[par_v]++;
+        }
+    }
+};
+
+class Solution {
+public:
+    int makeConnected(int n, vector<vector<int>>& connections) {
+        int m = connections.size();
+        if (m < n - 1) return -1;
+
+        DisjointSet ds(n);
+        int extra = 0;
+        for (auto &edge : connections) {
+            int u = edge[0], v = edge[1];
+            int pu = ds.findParent(u), pv = ds.findParent(v);
+            if (pu == pv)
+                extra++;
+            else
+                ds.unionbyrank(u, v);
+        }
+
+        int count = 0;
+        for(int i=0; i<n; i++){
+            if(ds.parent[i] == i) count++;
+        }
+        if(extra >= count-1) return count-1;
+        return -1;
+    }
+};
