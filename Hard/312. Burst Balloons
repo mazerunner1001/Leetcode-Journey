@@ -1,0 +1,24 @@
+// standrad MCM question with insertion at beginning and end
+
+class Solution {
+public:
+    int solve(int i, int j, vector<int>& nums, vector<vector<int>>& dp, int n){
+        if(i>j) return 0;
+        if(dp[i][j] != -1) return dp[i][j];
+        int score = 0;
+        for(int k=i; k<=j; k++){
+            int left = solve(i, k-1, nums, dp, n);
+            int right = solve(k+1, j, nums, dp, n);
+            int curr = nums[k]*nums[i-1]*nums[j+1] + left + right;
+            score = max(score, curr);
+        }
+        return dp[i][j] = score;
+    }
+    int maxCoins(vector<int>& nums) {
+        nums.insert(nums.begin(), 1);
+        nums.push_back(1);
+        int n = nums.size();
+        vector<vector<int>> dp(n, vector<int>(n, -1));
+        return solve(1, n-2, nums, dp, n);
+    }
+};
