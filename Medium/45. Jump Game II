@@ -1,0 +1,50 @@
+// greedy question with O(n) greedy solution and O(n^2) DP solution
+
+// greedy
+
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+        int n = nums.size();
+        int l = 0, r = 0;
+        int jumps = 0;
+        while(r < n-1){
+            int farthest = 0;
+            for(int i=l; i<=r; i++){
+                farthest = max(farthest, i + nums[i]);
+            }
+            jumps++;
+            l = r+1;
+            r = farthest;
+        }
+        return jumps;
+    }
+};
+
+memoization
+
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    int rec(int ind, vector<int>& nums, int n, vector<int>& dp) {
+        if (ind >= n - 1) return 0;
+        if (dp[ind] != -1) return dp[ind];
+        int mini = INT_MAX;
+        for (int i = 1; i <= nums[ind]; i++) {
+            if (ind + i < n) {
+                int next = rec(ind + i, nums, n, dp);
+                if (next != INT_MAX)  // ✅ prevents overflow
+                    mini = min(mini, 1 + next);
+            }
+        }
+        return dp[ind] = mini;
+    }
+
+    int jump(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> dp(n, -1);
+        return rec(0, nums, n, dp);
+    }
+};
