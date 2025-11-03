@@ -1,4 +1,7 @@
-// greedy solution
+// can be done using greedy (O(nlogn)) and DP (O(n^2))
+
+
+// greedy
 
 class Solution {
 public:
@@ -17,5 +20,27 @@ public:
             time = farthest;
         }
         return res;
+    }
+};
+
+
+// DP
+
+class Solution {
+public:
+    int videoStitching(vector<vector<int>>& clips, int T) {
+        vector<int> dp(T+1, INT_MAX);
+        dp[0] = 0;
+        
+        for(int t=1; t<=T; t++){
+            for(auto& c : clips){
+                int start = c[0], end = c[1];
+                if(start < t && t<= end && dp[start] != INT_MAX){
+                    dp[t] = min(dp[t], dp[start] + 1);
+                }
+            }
+        }
+        if(dp[T] == INT_MAX) return -1;
+        return dp[T];
     }
 };
