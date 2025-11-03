@@ -1,0 +1,21 @@
+// greedy solution
+
+class Solution {
+public:
+    int videoStitching(vector<vector<int>>& clips, int T) {
+        sort(begin(clips), end(clips));
+        int res = 0;
+        int i = 0, time = 0, farthest = 0;
+
+        while (time < T) {
+            while (i < clips.size() && clips[i][0] <= time) {
+                farthest = max(farthest, clips[i][1]);
+                i++;
+            }
+            if (time == farthest) return -1;
+            res++;
+            time = farthest;
+        }
+        return res;
+    }
+};
