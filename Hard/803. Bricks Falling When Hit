@@ -1,0 +1,83 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class DisjointSet {
+public:
+    vector<int> parent, size;
+    DisjointSet(int n) {
+        parent.resize(n);
+        size.resize(n);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+    }
+    int findParent(int u) {
+        if (parent[u] == u) return u;
+        return parent[u] = findParent(parent[u]);
+    }
+    void unionBySize(int u, int v) {
+        int par_u = findParent(u);
+        int par_v = findParent(v);
+        if (par_u == par_v) return;
+
+        if (size[par_u] < size[par_v]) swap(par_u, par_v);
+        parent[par_v] = par_u;
+        size[par_u] += size[par_v];
+    }
+};
+
+class Solution {
+public:
+    vector<vector<int>> dirs = {{0,1}, {0,-1}, {1,0}, {-1,0}};
+    int n, m;
+    vector<vector<int>> grid;
+
+    void unionAround(int x, int y, DisjointSet &ds) {
+        int curr = x * m + y + 1;
+        for (auto &dir : dirs) {
+            int nx = x + dir[0];
+            int ny = y + dir[1];
+            if (nx >= 0 && nx < n && ny >= 0 && ny < m && grid[nx][ny] == 1) {
+                ds.unionBySize(curr, nx * m + ny + 1);
+            }
+        }
+        if (x == 0) ds.unionBySize(0, curr);
+    }
+
+    vector<int> hitBricks(vector<vector<int>>& g, vector<vector<int>>& hits) {
+        grid = g;
+        n = grid.size();
+        m = grid[0].size();
+
+        DisjointSet ds(m * n + 1);
+
+        for (auto &hit : hits) {
+            if (grid[hit[0]][hit[1]] == 1) grid[hit[0]][hit[1]] = 2;
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) unionAround(i, j, ds);
+            }
+        }
+
+        int numBricksLeft = ds.size[ds.findParent(0)];
+        int totalHits = hits.size();
+        vector<int> numBricksDropped(totalHits, 0);
+
+        for (int i = totalHits - 1; i >= 0; i--) {
+            int x = hits[i][0];
+            int y = hits[i][1];
+            if (grid[x][y] == 2) {
+                grid[x][y] = 1;
+                unionAround(x, y, ds);
+                int newNumBricksLeft = ds.size[ds.findParent(0)];
+                numBricksDropped[i] = max(0, newNumBricksLeft - numBricksLeft - 1);
+                numBricksLeft = newNumBricksLeft;
+            }
+        }
+
+        return numBricksDropped;
+    }
+};
