@@ -1,0 +1,32 @@
+// stack solution
+
+class Solution {
+public:
+    bool parseBoolExpr(string s) {
+        int n = s.size();
+        stack<char> st;
+        for(int i=0; i<n; i++){
+            if(s[i] == '!' || s[i] == '&' || s[i] == '|' || s[i] == 't' || s[i] == 'f'){
+                st.push(s[i]);
+            }else if(s[i] == ')'){
+                bool is_fa = false, is_tr = false;
+                while(st.top() == 'f' || st.top() == 't'){
+                    char p = st.top();
+                    st.pop();
+                    if(p == 'f') is_fa = true;
+                    if(p == 't') is_tr = true;
+                }
+                char op = st.top();
+                st.pop();
+                if (op == '!') {
+                    st.push(is_tr ? 'f' : 't');
+                } else if (op == '&') {
+                    st.push(is_fa ? 'f' : 't');
+                } else {
+                    st.push(is_tr ? 't' : 'f');
+                }
+            }else continue;
+        }
+        return st.top() == 't';
+    }
+};
